@@ -97,7 +97,7 @@ class Database:
             cursor = self.connection.cursor()
             
             query = """
-            INSERT INTO trades 
+            INSERT INTO trade_history 
             (path, initialAmount, finalAmount, profitAmount, profitPercent, 
              step1Symbol, step1Price, step1Amount, 
              step2Symbol, step2Price, step2Amount,
