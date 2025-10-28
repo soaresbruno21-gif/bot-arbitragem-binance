@@ -17,8 +17,9 @@ class Database:
             # Parse da URL de conexão
             db_url = os.getenv('DATABASE_URL')
             if not db_url:
-                print("[Database] DATABASE_URL não configurada")
-                return
+                # Usar URL hardcoded como fallback
+                db_url = 'mysql://4L7JSaogBTaENVd.root:8WhKCU3v58e8SV0xMwtr@gateway02.us-east-1.prod.aws.tidbcloud.com:4000/6PL7EYXJU5qC4D6yXv3KLA'
+                print("[Database] Usando DATABASE_URL padrão")
             
             # Extrair componentes da URL
             # mysql://user:pass@host:port/database?ssl=...
