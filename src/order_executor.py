@@ -257,8 +257,13 @@ class OrderExecutor:
                 quantity = quantity_base
                 result['quantity_sent'] = quantity_base
             
-            # Formata quantidade
+            # Formata quantidade (arredonda para baixo conforme regras)
             quantity_formatted = self.format_quantity(symbol, quantity)
+            
+            # Garante que não seja zero
+            if float(quantity_formatted) == 0:
+                # Usa quantidade mínima
+                quantity_formatted = self.format_quantity(symbol, quantity * 1.01)
             
             if self.simulation_mode:
                 # Modo simulação: apenas calcula
