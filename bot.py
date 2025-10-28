@@ -177,15 +177,28 @@ class ArbitrageBot:
                             self.stats['total_profit'] += result['profit']
                             
                             # Salva trade no banco
+                            orders = result['orders']
                             self.database.save_trade({
                                 'path': ' → '.join(best['triangle']['path']),
                                 'initial_amount': result['initial_amount'],
                                 'final_amount': result['final_amount'],
                                 'profit_amount': result['profit'],
                                 'profit_percent': result['profit_percent'],
-                                'step1': result['steps'][0],
-                                'step2': result['steps'][1],
-                                'step3': result['steps'][2],
+                                'step1': {
+                                    'symbol': orders[0]['symbol'],
+                                    'price': orders[0]['price'],
+                                    'amount': orders[0]['quantity_sent']
+                                },
+                                'step2': {
+                                    'symbol': orders[1]['symbol'],
+                                    'price': orders[1]['price'],
+                                    'amount': orders[1]['quantity_sent']
+                                },
+                                'step3': {
+                                    'symbol': orders[2]['symbol'],
+                                    'price': orders[2]['price'],
+                                    'amount': orders[2]['quantity_sent']
+                                },
                                 'simulation_mode': self.simulation_mode
                             })
                             
