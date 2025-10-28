@@ -1,0 +1,28 @@
+# Configurações sensíveis
+config/*.json
+config/*.env
+*.key
+
+# Logs
+logs/*.log
+logs/*.txt
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Sistema
+.DS_Store
+Thumbs.db
