@@ -103,15 +103,16 @@ class Database:
             
             query = """
             INSERT INTO trade_history 
-            (path, pairs, initialAmount, finalAmount, profit, profitPercent, 
+            (userId, path, pairs, initialAmount, finalAmount, profit, profitPercent, 
              simulationMode, success, createdAt)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
             
             # Criar pairs text
             pairs_text = f"{trade_data['step1']['symbol']},{trade_data['step2']['symbol']},{trade_data['step3']['symbol']}"
             
             values = (
+                1,  # userId padrão (owner)
                 trade_data['path'],
                 pairs_text,
                 int(trade_data['initial_amount'] * 100),  # Converter para centavos
