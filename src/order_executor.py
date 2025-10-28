@@ -91,7 +91,9 @@ class OrderExecutor:
                 # Calcula número de casas decimais
                 precision = 0
                 if step_size < 1:
-                    precision = len(str(step_size).rstrip('0').split('.')[1])
+                    step_str = str(step_size).rstrip('0')
+                    if '.' in step_str:
+                        precision = len(step_str.split('.')[1])
                 
                 # Arredonda para baixo
                 quantity = float(quantity) - (float(quantity) % step_size)
