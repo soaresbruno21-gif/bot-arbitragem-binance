@@ -77,11 +77,11 @@ class OrderExecutor:
             quantity (float): Quantidade a formatar
             
         Returns:
-            str: Quantidade formatada
+            float: Quantidade formatada
         """
         info = self.get_symbol_info(symbol)
         if not info:
-            return str(quantity)
+            return quantity
         
         # Busca precisão do LOT_SIZE
         for filter in info['filters']:
@@ -89,18 +89,26 @@ class OrderExecutor:
                 step_size = float(filter['stepSize'])
                 
                 # Calcula número de casas decimais
-                precision = 0
-                if step_size < 1:
-                    step_str = str(step_size).rstrip('0')
-                    if '.' in step_str:
-                        precision = len(step_str.split('.')[1])
+                precision = 8
+                if step_size >= 1:
+                    precision = 0
+                elif step_size >= 0.1:
+                    precision = 1
+                elif step_size >= 0.01:
+                    precision = 2
+                elif step_size >= 0.001:
+                    precision = 3
+                elif step_size >= 0.0001:
+                    precision = 4
+                elif step_size >= 0.00001:
+                    precision = 5
+                elif step_size >= 0.000001:
+                    precision = 6
                 
-                # Arredonda para baixo
-                quantity = float(quantity) - (float(quantity) % step_size)
-                
-                return f"{quantity:.{precision}f}"
+                # Arredonda
+                return round(quantity, precision)
         
-        return str(quantity)
+        return quantity
     
     def execute_arbitrage(self, opportunity, amount):
         """
@@ -257,22 +265,17 @@ class OrderExecutor:
                 quantity = quantity_base
                 result['quantity_sent'] = quantity_base
             
-            # Formata quantidade (arredonda para baixo conforme regras)
+            # Formata quantidade (arredonda conforme regras)
             quantity_formatted = self.format_quantity(symbol, quantity)
-            
-            # Garante que não seja zero
-            if float(quantity_formatted) == 0:
-                # Usa quantidade mínima
-                quantity_formatted = self.format_quantity(symbol, quantity * 1.01)
             
             if self.simulation_mode:
                 # Modo simulação: apenas calcula
-                self.log(f"   [SIMULAÇÃO] {side} {quantity_formatted} em {symbol} @ ${price:.8f}")
+                self.log(f"   [SIMULAÇÃO] {side} {quantity_formatted:.8f} em {symbol} @ ${price:.8f}")
                 
                 if side == SIDE_BUY:
-                    result['quantity_received'] = float(quantity_formatted)
+                    result['quantity_received'] = quantity_formatted
                 else:
-                    result['quantity_received'] = float(quantity_formatted) * price
+                    result['quantity_received'] = quantity_formatted * price
                 
                 result['success'] = True
                 result['order_id'] = 'SIM_' + str(int(datetime.now().timestamp()))
