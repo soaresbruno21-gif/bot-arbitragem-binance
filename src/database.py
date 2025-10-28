@@ -68,16 +68,17 @@ class Database:
             
             query = """
             INSERT INTO opportunities 
-            (path, profitPercent, step1Symbol, step2Symbol, step3Symbol, createdAt)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            (path, pairs, profitPercent, createdAt)
+            VALUES (%s, %s, %s, %s)
             """
+            
+            # Concatenar símbolos em um texto
+            pairs_text = ','.join(opportunity['symbols'])
             
             values = (
                 opportunity['path'],
+                pairs_text,
                 int(opportunity['profit_percent'] * 100),  # Converter para basis points
-                opportunity['symbols'][0],
-                opportunity['symbols'][1],
-                opportunity['symbols'][2],
                 datetime.now()
             )
             
@@ -99,31 +100,23 @@ class Database:
             
             query = """
             INSERT INTO trade_history 
-            (path, initialAmount, finalAmount, profitAmount, profitPercent, 
-             step1Symbol, step1Price, step1Amount, 
-             step2Symbol, step2Price, step2Amount,
-             step3Symbol, step3Price, step3Amount,
-             status, simulationMode, createdAt)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            (path, pairs, initialAmount, finalAmount, profit, profitPercent, 
+             simulationMode, success, createdAt)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
+            
+            # Criar pairs text
+            pairs_text = f"{trade_data['step1']['symbol']},{trade_data['step2']['symbol']},{trade_data['step3']['symbol']}"
             
             values = (
                 trade_data['path'],
+                pairs_text,
                 int(trade_data['initial_amount'] * 100),  # Converter para centavos
                 int(trade_data['final_amount'] * 100),
                 int(trade_data['profit_amount'] * 100),
                 int(trade_data['profit_percent'] * 100),  # Converter para basis points
-                trade_data['step1']['symbol'],
-                str(trade_data['step1']['price']),
-                str(trade_data['step1']['amount']),
-                trade_data['step2']['symbol'],
-                str(trade_data['step2']['price']),
-                str(trade_data['step2']['amount']),
-                trade_data['step3']['symbol'],
-                str(trade_data['step3']['price']),
-                str(trade_data['step3']['amount']),
-                'success',
                 trade_data.get('simulation_mode', True),
+                True,  # success
                 datetime.now()
             )
             
