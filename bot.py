@@ -178,7 +178,8 @@ class ArbitrageBot:
                             
                             # Salva trade no banco
                             orders = result['orders']
-                            self.database.save_trade({
+                            self.log("[DEBUG] Salvando trade no banco...", "INFO")
+                            save_result = self.database.save_trade({
                                 'path': ' → '.join(best['triangle']['path']),
                                 'initial_amount': result['initial_amount'],
                                 'final_amount': result['final_amount'],
@@ -201,6 +202,7 @@ class ArbitrageBot:
                                 },
                                 'simulation_mode': self.simulation_mode
                             })
+                            self.log(f"[DEBUG] Trade salvo: {save_result}", "INFO")
                             
                             self.log(
                                 f"✅ Trade executado! Lucro: ${result['profit']:.2f} ({result['profit_percent']:.2f}%)",

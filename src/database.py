@@ -92,10 +92,13 @@ class Database:
     
     def save_trade(self, trade_data):
         """Salva um trade executado"""
+        print("[Database] Tentando salvar trade...")
         if not self.ensure_connection():
+            print("[Database] Falha na conexão")
             return False
         
         try:
+            print(f"[Database] Dados do trade: {trade_data['path']}")
             cursor = self.connection.cursor()
             
             query = """
@@ -120,12 +123,14 @@ class Database:
                 datetime.now()
             )
             
+            print(f"[Database] Executando query...")
             cursor.execute(query, values)
             self.connection.commit()
             cursor.close()
+            print("[Database] ✓ Trade salvo com sucesso!")
             return True
         except Error as e:
-            print(f"[Database] Erro ao salvar trade: {e}")
+            print(f"[Database] ✗ Erro ao salvar trade: {e}")
             return False
     
     def get_config(self):
