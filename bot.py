@@ -16,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).parent / 'src'))
 
 from arbitrage_analyzer import ArbitrageAnalyzer
 from order_executor import OrderExecutor
+from database import Database
 
 class ArbitrageBot:
     """Bot de arbitragem triangular automatizado"""
@@ -42,6 +43,7 @@ class ArbitrageBot:
         # Componentes
         self.analyzer = ArbitrageAnalyzer(self.base_currency, self.fee_percent)
         self.executor = OrderExecutor(simulation_mode=self.simulation_mode)
+        self.database = Database()
         
         # Estatísticas
         self.stats = {
@@ -141,6 +143,18 @@ class ArbitrageBot:
                     if profitable:
                         self.stats['opportunities_found'] += len(profitable)
                         
+                        # Salva oportunidades no banco
+                        for opp in profitable[:5]:  # Salva top 5
+                            self.database.save_opportunity({
+                                'path': ' → '.join(opp['triangle']['path']),
+                                'profit_percent': opp['profit_percent'],
+                                'symbols': [
+                                    opp['triangle']['pairs'][0],
+                                    opp['triangle']['pairs'][1],
+                                    opp['triangle']['pairs'][2]
+                                ]
+                            })
+                        
                         # Pega a melhor
                         best = profitable[0]
                         
@@ -161,6 +175,19 @@ class ArbitrageBot:
                             self.stats['trades_successful'] += 1
                             self.stats['total_invested'] += result['initial_amount']
                             self.stats['total_profit'] += result['profit']
+                            
+                            # Salva trade no banco
+                            self.database.save_trade({
+                                'path': ' → '.join(best['triangle']['path']),
+                                'initial_amount': result['initial_amount'],
+                                'final_amount': result['final_amount'],
+                                'profit_amount': result['profit'],
+                                'profit_percent': result['profit_percent'],
+                                'step1': result['steps'][0],
+                                'step2': result['steps'][1],
+                                'step3': result['steps'][2],
+                                'simulation_mode': self.simulation_mode
+                            })
                             
                             self.log(
                                 f"✅ Trade executado! Lucro: ${result['profit']:.2f} ({result['profit_percent']:.2f}%)",
